@@ -51,7 +51,7 @@ http.createServer(function (req, res) {
     form.parse(req, function (err, fields, files) {
       var oldpath = files.filetoupload[0].filepath;
       console.log(oldpath);
-      var newpath = __dirname + "\\" + files.filetoupload[0].originalFilename;
+      var newpath = __dirname + "\\" + files.filetoupload.originalFilename;
       console.log(newpath);
       fs.rename(oldpath, newpath, function (err) {
         if (err) throw err;
