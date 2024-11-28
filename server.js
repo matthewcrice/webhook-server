@@ -43,7 +43,7 @@ app.listen(port, () => {
 var http = require('http');
 var formidable = require('formidable');
 var fs = require('fs');
-//var dt = require('./MyFirstModuale');
+var dt = require('./MyFirstModuale');
 
 http.createServer(function (req, res) {
   if (req.url == '/fileupload') {
@@ -65,8 +65,8 @@ http.createServer(function (req, res) {
     res.write('<input type="file" name="filetoupload"><br>');
     res.write('<input type="submit">');
     res.write('</form>');
-    //res.write("The date and time are currently: " + dt.myDateTime() + "\n");
-    //res.write("\nMy Name is: " + dt.myName());
+    res.write("The date and time are currently: " + dt.myDateTime() + "\n");
+    res.write("\nMy Name is: " + dt.myName());
     return res.end();
   }
 }).listen(3000);
