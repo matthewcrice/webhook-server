@@ -1,48 +1,7 @@
-/*
-const express = require("express");
-
-// Create an Express app and listen for incoming requests on port 3000
-const app = express();
-const router = express.Router();
-const port = process.env.PORT || 3000;
-
-// Use middleware to parse incoming requests with JSON and URL-encoded payloads
-app.use(express.json());
-app.use(express.urlencoded());
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Internal Server Error");
-});
-
-// Handle GET requests to the root URL
-router.get("/", (req, res) => {
-  res.send("Welcome Matthew Rice");
-});
-
-// Handle POST requests to specific URLs i.e. webhook endpoints
-router.post("/webhook-1", (req, res) => {
-  console.log(req.body);
-  res.send("Webhook 1 successfully received.");
-});
-
-router.post("/webhook-2", (req, res) => {
-  console.log(req.body);
-  res.send("Webhook 2 successfully received.");
-});
-
-// Mount the router middleware
-app.use(router);
-
-// Start the server and listen for incoming connections
-app.listen(port, () => {
-  console.log(`Server running at https://localhost:${port}/`);
-});
-*/
 var http = require('http');
 var formidable = require('formidable');
 var fs = require('fs');
+var path = require('path');
 var dt = require('./MyFirstModuale');
 
 http.createServer(function (req, res) {
@@ -69,6 +28,31 @@ http.createServer(function (req, res) {
     res.write('</form>');
     res.write("The date and time are currently: " + dt.myDateTime() + "\n");
     res.write("\nMy Name is: " + dt.myName());
+
+    var DIR = '.';
+
+    // 1. List all files in DIR
+    var filesdir = fileList(DIR);
+    // => ['/usr/local/bin/babel', '/usr/local/bin/bower', ...]
+
+    // 2. List all file names in DIR
+    var filenamesret = fileList(DIR).map((file) => file.split(path.sep).slice(-1)[0]);
+    // => ['babel', 'bower', ...]
+
+
+    for (let i = 0; i < filesdir.length; i++) {
+      res.write(filesdir[i] + '\n');
+    }
+
     return res.end();
   }
 }).listen(3000);
+
+// String -> [String]
+function fileList(dir) {
+  return fs.readdirSync(dir).reduce(function(list, file) {
+    var name = path.join(dir, file);
+    var isDir = fs.statSync(name).isDirectory();
+    return list.concat(isDir ? fileList(name) : [name]);
+  }, []);
+}
