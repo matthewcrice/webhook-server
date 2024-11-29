@@ -64,6 +64,7 @@ function getDataPath()
   }
   else
   {
+    testWrite();
     localPath = "/app/" + DIR;
   }
 
@@ -76,4 +77,18 @@ function getDataPath()
 
 function isLocalHost(hostname = window.location.hostname) {
   return ['localhost', '127.0.0.1', '', '::1'].includes(hostname)
+}
+
+function testWrite()
+{
+  const filePath = path.join(__dirname, 'data', 'example.txt');
+  const mountPath = process.env.RAILWAY_VOLUME_MOUNT_PATH;
+
+  fs.writeFile(path.join(mountPath, 'example.txt'), 'Hello, World!', (err) => {
+    if (err) {
+      console.error('Error writing file:', err);
+    } else {
+      console.log('File written successfully!');
+    }
+  });
 }
