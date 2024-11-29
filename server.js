@@ -4,15 +4,24 @@ var fs = require('fs');
 var path = require('path');
 var dt = require('./MyFirstModuale');
 
+var DIR = 'data';
+
 http.createServer(function (req, res) {
   if (req.url == '/fileupload') {
     var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
       var oldpath = files.filetoupload[0].filepath;
-      console.log(oldpath);
-      var newpath = __dirname + "\\" + files.filetoupload[0].originalFilename;
-      console.log(newpath);
-      fs.rename(oldpath, newpath, function (err) {
+
+      // make the DIR if it doesn't already exist
+      var destinationPath = __dirname + "\\" + DIR + "\\";
+      if(!fs.existsSync(DIR))
+      {
+        fs.mkdirSync(DIR);
+      }
+      var fullpath = destinationPath + files.filetoupload[0].originalFilename;
+
+      //
+      fs.rename(oldpath, fullpath, function (err) {
         if (err) throw err;
         res.write('File uploaded and moved!');
         res.end();
@@ -29,19 +38,21 @@ http.createServer(function (req, res) {
     res.write("The date and time are currently: " + dt.myDateTime() + "\n");
     res.write("\nMy Name is: " + dt.myName());
 
-    var DIR = '.';
-
-    // 1. List all files in DIR
-    var filesdir = fileList(DIR);
-    // => ['/usr/local/bin/babel', '/usr/local/bin/bower', ...]
-
-    // 2. List all file names in DIR
-    var filenamesret = fileList(DIR).map((file) => file.split(path.sep).slice(-1)[0]);
-    // => ['babel', 'bower', ...]
 
 
-    for (let i = 0; i < filesdir.length; i++) {
-      res.write(filesdir[i] + '\n');
+    if (fs.existsSync(DIR)) {
+      // 1. List all files in DIR
+      var filesdir = fileList(DIR);
+      // => ['/usr/local/bin/babel', '/usr/local/bin/bower', ...]
+
+      // 2. List all file names in DIR
+      var filenamesret = fileList(DIR).map((file) => file.split(path.sep).slice(-1)[0]);
+      // => ['babel', 'bower', ...]
+
+
+      for (let i = 0; i < filesdir.length; i++) {
+        res.write(filesdir[i] + '\n');
+      }
     }
 
     return res.end();
