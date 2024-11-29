@@ -54,6 +54,10 @@ http.createServer(function (req, res) {
         res.write(filesdir[i] + '\n');
       }
     }
+    else
+    {
+      fs.mkdirSync(DIR);
+    }
 
     return res.end();
   }
