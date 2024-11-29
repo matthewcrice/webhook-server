@@ -4,8 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var dt = require('./MyFirstModuale');
 
-var DIR = 'data';
-
 http.createServer(function (req, res) {
   if (req.url == '/fileupload') {
     var form = new formidable.IncomingForm();
@@ -13,11 +11,7 @@ http.createServer(function (req, res) {
       var oldpath = files.filetoupload[0].filepath;
 
       // make the DIR if it doesn't already exist
-      var destinationPath = __dirname + "\\" + DIR + "\\";
-      if(!fs.existsSync(DIR))
-      {
-        fs.mkdirSync(DIR);
-      }
+      var destinationPath = getDataPath();
       var fullpath = destinationPath + files.filetoupload[0].originalFilename;
 
       //
@@ -38,25 +32,11 @@ http.createServer(function (req, res) {
     res.write("The date and time are currently: " + dt.myDateTime() + "\n");
     res.write("\nMy Name is: " + dt.myName());
 
-
-
-    if (fs.existsSync(DIR)) {
-      // 1. List all files in DIR
-      var filesdir = fileList(DIR);
-      // => ['/usr/local/bin/babel', '/usr/local/bin/bower', ...]
-
-      // 2. List all file names in DIR
-      var filenamesret = fileList(DIR).map((file) => file.split(path.sep).slice(-1)[0]);
-      // => ['babel', 'bower', ...]
-
-
-      for (let i = 0; i < filesdir.length; i++) {
-        res.write(filesdir[i] + '\n');
-      }
-    }
-    else
-    {
-      fs.mkdirSync(DIR);
+    var destinationPath = getDataPath();
+    var filesdir = fileList(destinationPath);
+    var filenamesret = fileList(destinationPath).map((file) => file.split(path.sep).slice(-1)[0]);
+    for (let i = 0; i < filesdir.length; i++) {
+      res.write(filesdir[i] + '\n');
     }
 
     return res.end();
@@ -70,4 +50,28 @@ function fileList(dir) {
     var isDir = fs.statSync(name).isDirectory();
     return list.concat(isDir ? fileList(name) : [name]);
   }, []);
+}
+
+function getDataPath()
+{
+  var DIR = 'data';
+  var localPath = "";
+  if(isLocalHost)
+  {
+    localPath = __dirname + "\\" + DIR + "\\";
+  }
+  else
+  {
+    localPath = "/app/" + DIR;
+  }
+
+  if(!fs.existsSync(localPath))
+  {
+    fs.mkdirSync(localPath);
+  }
+  return localPath;
+}
+
+function isLocalHost(hostname = window.location.hostname) {
+  return ['localhost', '127.0.0.1', '', '::1'].includes(hostname)
 }
