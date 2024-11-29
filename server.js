@@ -30,7 +30,7 @@ http.createServer(function (req, res) {
     res.write('<input type="submit">');
     res.write('</form>');
     res.write("The date and time are currently: " + dt.myDateTime() + "\n");
-    res.write("\nMy Name is: " + dt.myName());
+    res.write("My Name is: " + dt.myName() );
 
     var destinationPath = getDataPath();
     var filesdir = fileList(destinationPath);
@@ -38,6 +38,8 @@ http.createServer(function (req, res) {
     for (let i = 0; i < filesdir.length; i++) {
       res.write(filesdir[i] + '\n');
     }
+
+    res.write(destinationPath);
 
     return res.end();
   }
